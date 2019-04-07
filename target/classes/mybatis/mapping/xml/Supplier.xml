@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szxs.dao.SupplierDao">
+    <select id="querySupplierByPager" resultType="Supplier">
+        select * from supplier
+        <where>
+            <if test="null != dname and '' != dname">
+                AND  dname like concat('%',#{dname},'%')
+            </if>
+            <if test="did > 0">
+                OR did=#{did}
+            </if>
+        </where>
+        limit #{pageNo},#{pageSize}
+    </select>
+
+
+    <select id="querySupplierById" resultType="Supplier">
+        select * from Supplier where did=#{did}
+    </select>
+
+
+    <select id="selectByPagerCount" resultType="_int">
+        select count(1) from Supplier
+        <where>
+            <if test="null != dname and '' != dname">
+                AND  dname like concat('%',#{dname}'%')
+            </if>
+            <if test="did > 0">
+                OR did=#{did}
+            </if>
+        </where>
+    </select>
+
+    <insert id="saveSupplier">
+        INSERT  into supplier values(default,#{dname},#{dtel},#{demail},#{daddress})
+    </insert>
+
+    <update id="modifySupplier">
+        UPDATE supplier
+        <set>
+            <if test="null != dname and '' != dname">
+                dname=#{dname},
+            </if>
+            <if test="null != dtel and '' != dtel">
+                dtel=#{dtel},
+            </if>
+            <if test="null != dtel and '' != dtel">
+                dtel=#{dtel},
+            </if>
+            <if test="null != demail and '' != demail">
+                demail=#{demail},
+            </if>
+            <if test="null != daddress and '' != daddress">
+                daddress=#{daddress},
+            </if>
+
+        </set>
+        where did=#{did}
+     </update>
+
+    <delete id="deleteSupplier">
+          DELETE FROM supplier where did=#{did}
+    </delete>
+
+
+    <select id="selectByName" resultType="_int">
+         select count(1) from supplier where dname=#{dname}
+    </select>
+
+    <select id="selectByEmail" resultType="_int">
+        select count(1) from supplier where demail=#{demail}
+    </select>
+
+    <select id="selectByTel" resultType="_int">
+         select count(1) from supplier where dtel=#{dtel}
+    </select>
+
+
+    <select id="selectpurchase_infoById" resultType="_int">
+        select COUNT(1) FROM purchase_info where did=#{did}
+    </select>
+
+</mapper>

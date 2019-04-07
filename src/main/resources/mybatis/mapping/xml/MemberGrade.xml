@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szxs.dao.Member_gradeDao">
+
+      <select id="queryMemberGrades" resultType="Member_grade">
+            select * from member_grade
+      </select>
+
+      <insert id="insertMemberGrade">
+            insert into member_grade VALUES(default,#{mgrade},#{mdiscount})
+      </insert>
+
+      <update id="updateMemberGrade">
+             update member_grade
+            <set>
+                 <if test="null != mgrade and '' != mgrade">
+                      mgrade=#{mgrade}
+                 </if>
+
+                 <if test="mdisaccount > 0">
+                      mdisaccount=#{mdisaccount}
+                 </if>
+            </set>
+          where gid=#{gid}
+      </update>
+
+      <delete id="deleteMemberGrade">
+               delete member_grade
+               <where>
+                    <if test="gid > 0">
+                          gid=#{gid}
+                    </if>
+               </where>
+      </delete>
+
+
+
+</mapper>

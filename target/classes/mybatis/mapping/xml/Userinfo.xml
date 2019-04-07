@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szxs.dao.UserinfoDao">
+
+     <resultMap id="user" type="User_info">
+         <id column="sid" property="sid"/>
+         <result column="username" property="username"/>
+         <result column="userpassword" property="userpassword"/>
+         <association property="userType" javaType="UserType">
+            <result property="tid" column="tid"/>
+            <result property="tname" column="tname"/>
+         </association>
+     </resultMap>
+
+
+    <!--根据条件查询单个对象-->
+     <select id="queryUser" resultMap="user">
+          SELECT * FROM  user_info join user_type on userType=tid
+          <where>
+                <if test="null != username and '' != username ">
+                    and username=#{username}
+                </if>
+                <if test="null != userpassword and ''!=userpassword">
+                     and userpassword=#{userpassword}
+                </if>
+
+          </where>
+     </select>
+
+
+
+
+
+    <select id="queryUserInfoByPager" resultMap="user">
+           SELECT * FROM user_info join user_Type on user_type.tid=user_info.userType
+           <where>
+               <if test="tid > 0">
+                   and user_type.tid=#{tid}
+               </if>
+               <if test="sid > 0">
+                     OR  sid=#{sid}
+               </if>
+               <if test="null != username and '' != username">
+                     OR username like concat('%',#{username},'%')
+               </if>
+           </where>
+            ORDER BY sid
+            limit #{pageNo},#{pageSize}
+    </select>
+
+
+
+    <select id="selectPagerCount" resultType="_int">
+        SELECT count(1) FROM user_info
+        <where>
+            <if test="tid > 0">
+                and usertype=#{tid}
+            </if>
+            <if test="sid > 0">
+                OR  sid=#{sid}
+            </if>
+            <if test="null != username and '' != username">
+                OR username like concat('%',#{username},'%')
+            </if>
+        </where>
+        ORDER BY sid
+    </select>
+
+
+    <delete id="deleteUserInfo">
+        delete user_info where sid=#{sid}
+    </delete>
+
+    <update id="updateUser">
+        UPDATE user_info
+        <set>
+            <if test="userType.tid > 0">
+                usertype=#{userType.tid},
+            </if>
+            <if test="null != userpassword and '' != userpassword">
+                userpassword=#{userpassword},
+            </if>
+
+        </set>
+        WHERE sid=#{sid}
+    </update>
+
+    <select id="queryUserBySid" resultMap="user">
+        SELECT * from user_info join user_type on user_info.usertype=user_type.tid
+        WHERE sid=#{sid}
+    </select>
+
+    <insert id="saveUserInfo">
+        insert into user_info VALUES(default,#{username},#{userpassword},#{userType.tid})
+    </insert>
+
+    <select id="existsUserName" resultType="_int">
+        SELECT COUNT(1) FROM user_info WHERE user_info.username=#{username}
+    </select>
+
+    <select id="validateUserPassword" resultType="_int">
+        SELECT COUNT(1) FROM user_info WHERE sid=#{sid} and userpassword=#{userpassword}
+    </select>
+
+
+
+
+
+
+</mapper>

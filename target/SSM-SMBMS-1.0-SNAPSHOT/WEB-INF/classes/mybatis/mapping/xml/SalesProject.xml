@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szxs.dao.Sales_projectDao">
+        <resultMap id="project" type="Sales_project">
+            <id property="id" column="id"/>
+             <result property="snum" column="snum"/>
+              <association property="superSaleInfo" javaType="Super_sale_info" >
+                  <result property="saleid" column="saleid"/>
+                  <result property="sdate" column="sdate"/>
+                  <result property="mgeathering" column="mgathering"/>
+                  <result property="change" column="change"/>
+                  <result property="remark" column="remark"/>
+              </association>
+              <association property="goods_info" javaType="Goods_info">
+                  <id column="gid" property="gid"/>
+                  <result column="gname" property="gname"/>
+                  <result column="gcost_price" property="gcost_price"/>
+                  <result column="gstock" property="gstock"/>
+                  <result column="gprice" property="gprice"/>
+                  <result column="gdiscount" property="gdiscount"/>
+                  <result column="gpoints" property="gpoints"/>
+                  <result column="gunit" property="gunit"/>
+                  <result column="gremark" property="gremark"/>
+              </association>
+        </resultMap>
+
+
+
+
+    <select id="selectCountBySaleid" resultType="_int">
+        SELECT COUNT(1) FROM sales_project
+        <where>
+            <if test="saleid > 0">
+                 sales_saleid=#{saleid}
+            </if>
+        </where>
+    </select>
+
+
+<!--    <select id="queryPagerBySaleid" resultMap="project">
+        select super_sale_info.saleid as saleid,snum,goods_info.gid,gname,gcost_price,gstock,gprice,gdiscount,gpoints,gunit,gremark,
+        sdate,mgathering,`change`,remark
+        FROM sales_project JOIN super_sale_info ON sales_project.saleid=super_sale_info.saleid
+        JOIN  goods_info ON  sales_project.gid=goods_info.gid
+         <where>
+             <if test="saleid > 0">
+                 sales_project.saleid=#{saleid}
+             </if>
+         </where>
+        limit #{pagerNo},#{pagerSize}
+
+    </select>-->
+
+    <select id="queryPagerBySaleid" resultMap="project">
+        SELECT *
+        FROM sales_project JOIN super_sale_info ON sales_project.sales_saleid=super_sale_info.saleid
+        JOIN  goods_info ON  sales_project.sales_gid=goods_info.gid WHERE sales_project.sales_saleid=#{saleid}  LIMIT #{pagerNo},#{pagerSize}
+    </select>
+
+
+    <delete id="deleteSalesProjectBySalideId">
+        DELETE FROM sales_project WHERE sales_saleid=#{saleid}
+    </delete>
+
+</mapper>

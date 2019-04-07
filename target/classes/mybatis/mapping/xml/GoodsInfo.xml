@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szxs.dao.Goods_infoDao">
+       <resultMap id="goods" type="Goods_info">
+           <id column="gid" property="gid"/>
+           <result column="gname" property="gname"/>
+           <result column="gcost_price" property="gcost_price"/>
+           <result column="gstock" property="gstock"/>
+           <result column="gprice" property="gprice"/>
+           <result column="gdiscount" property="gdiscount"/>
+           <result column="gpoints" property="gpoints"/>
+           <result column="gunit" property="gunit"/>
+           <result column="gremark" property="gremark"/>
+           <association property="gcategroy" javaType="Goods_Category">
+               <result column="id" property="id"/>
+               <result column="name" property="name"/>
+           </association>
+       </resultMap>
+      <select id="queryGoodsInfoByPager" resultMap="goods">
+                SELECT * FROM goods_info join goods_category ON goods_info.gcategory=goods_category.id
+                <where>
+                      <if test="categoryId > 0">
+                          and goods_info.gcategory=#{categoryId}
+                      </if>
+                      <if test="null != gname and '' != gname">
+                          OR goods_info.gname LIKE concat('%',#{gname},'%')
+                      </if>
+                      <if test="gid > 0">
+                           OR goods_info.gid=#{gid}
+                      </if>
+                </where>
+
+              ORDER BY  gid
+              limit #{pageNo},#{pageSize}
+      </select>
+
+      <select id="selectGoodsInfoCount" resultType="_int">
+              SELECT count(1) FROM goods_info
+              <where>
+                  <if test="categoryId > 0">
+                      and goods_info.gcategory=#{categoryId}
+                  </if>
+                  <if test="null != gname and '' != gname">
+                      OR goods_info.gname LIKE concat('%',#{gname},'%')
+                  </if>
+                  <if test="gid > 0">
+                      OR goods_info.gid=#{gid}
+                  </if>
+              </where>
+      </select>
+
+      <select id="selectGoodsInfoById" resultMap="goods">
+              SELECT * FROM goods_info JOIN  goods_category ON  goods_info.gcategory=goods_category.id
+                  where goods_info.gid=#{gid}
+
+      </select>
+
+
+      <update id="modifyGoodsInfo">
+            update goods_info
+            <set>
+                <if test="null != gname and '' != gname">
+                     gname=#{gname},
+                </if>
+                <if test="gcost_price > 0">
+                    gcost_price=#{gcost_price},
+                </if>
+                <if test="gstock > 0">
+                    gstock=#{gstock},
+                </if>
+                <if test="gprice > 0">
+                    gprice=#{gprice},
+                </if>
+                <if test="gdiscount > 0">
+                    gdiscount=#{gdiscount},
+                </if>
+                <if test="gcategroy.id > 0">
+                    gcategory=#{gcategroy.id},
+                </if>
+                <if test="gpoints > 0">
+                    gpoints=#{gpoints},
+                </if>
+                <if test="null != gunit and '' != gunit">
+                    gunit=#{gunit},
+                </if>
+                <if test="null != gremark and '' != gremark">
+                    gremark=#{gremark},
+                </if>
+
+            </set>
+            where gid=#{gid}
+      </update>
+
+      <delete id="deleteGoodsInfo">
+           delete FROM goods_info where gid=#{gid}
+      </delete>
+
+      <insert id="saveGoodsInfo">
+          insert into goods_info values(default,#{gname},#{gcost_price},#{gstock},#{gprice},#{gdiscount},#{gcategroy.id},#{gpoints},#{gunit},${gremark})
+      </insert>
+
+
+      <select id="existsGoodsStock" resultType="_int">
+          SELECT gstock FROM  goods_info  WHERE  gid=#{gid}
+      </select>
+
+      <select id="queryAllGoods" resultMap="goods">
+                   SELECT * FROM goods_info JOIN  goods_category ON  goods_info.gcategory=goods_category.id
+      </select>
+</mapper>

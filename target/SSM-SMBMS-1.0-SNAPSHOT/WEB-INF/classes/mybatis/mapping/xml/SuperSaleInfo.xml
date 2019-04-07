@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szxs.dao.Super_sale_infoDao">
+    <resultMap id="supersaleinfo" type="Super_sale_info">
+        <result property="saleid" column="saleid"/>
+        <result property="sdate" column="sdate"/>
+        <result property="mgeathering" column="mgathering"/>
+        <result property="change" column="change"/>
+        <result property="remark" column="remark"/>
+        <association property="user_info" javaType="User_info">
+            <id column="sid" property="sid"/>
+            <result column="username" property="username"/>
+            <result column="userpassword" property="userpassword"/>
+        </association>
+        <association property="member_manage" javaType="Member_manage">
+            <result column="mid" property="mid"/>
+            <result column="mname" property="mname"/>
+            <result column="msex" property="msex"/>
+            <result column="mminetary" property="mminetary"/>
+            <result column="mtel" property="mtel"/>
+            <result column="maccount" property="maccount"/>
+        </association>
+    </resultMap>
+     <select id="querySuperSaleInfoPager" resultMap="supersaleinfo">
+           select * from super_sale_info,member_manage,user_info
+           <where>
+               <if test="1==1">
+                 AND   user_info.sid=super_sale_info.sid
+               </if>
+               <if test="1==1">
+                    AND  member_manage.mid=super_sale_info.mid
+               </if>
+               <if test="null != sdate">
+                    AND  DATE(Sdate)=sdate
+               </if>
+               <if test="saleid >0">
+                     AND saleid=#{saleid}
+               </if>
+               <if test="sid > 0">
+                      and super_sale_info.sid=#{sid}
+               </if>
+               <if test="mid > 0">
+                      AND  super_sale_info.mid=#{mid}
+               </if>
+           </where>
+            ORDER  BY  saleid
+            limit #{pagerNo},#{pagerSize}
+     </select>
+
+    <select id="querySuperSaleInfoCount" resultType="_int">
+        select COUNT(1) from super_sale_info
+        <where>
+            <if test="null != sdate">
+                AND  DATE(Sdate)=sdate
+            </if>
+            <if test="saleid >0">
+                AND saleid=#{saleid}
+            </if>
+            <if test="sid > 0">
+                and sid=#{sid}
+            </if>
+            <if test="mid > 0">
+                AND  mid=#{mid}
+            </if>
+        </where>
+        ORDER  BY  saleid
+
+    </select>
+
+    <delete id="deleteSuperSaleInfoBySaleid">
+        DELETE from super_sale_info WHERE saleid=#{saleid}
+    </delete>
+
+
+</mapper>
